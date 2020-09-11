@@ -1,6 +1,11 @@
 package cn.org.dianjiu.sso.controller;
 
-import com.alibaba.fastjson.JSON;
+import cn.org.dianjiu.sso.pojo.RespVO;
+import cn.org.dianjiu.sso.util.JwtUtils;
+import cn.org.dianjiu.sso.util.ObjectUtils;
+import cn.org.dianjiu.sso.util.RedisUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -8,12 +13,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
+@Slf4j
 @Controller
 public class SSOServerController {
+
+    @Autowired
+    RedisUtils redisUtils;
 
     /**
      * 验证cookie是否通过
@@ -21,13 +29,15 @@ public class SSOServerController {
      * @param cookieValue cookie内容
      * @return 是否认证成功
      */
-    @GetMapping("/authcookies")
+    @GetMapping("/checkCookie")
     public boolean checkAuthCookies (String cookieName, String cookieValue) {
-       /* boolean isUpdate = new JwtUtil(null,cookieValue).freeJwt();
-        if ("jian".equals(cookieName) && "ok".equals(cookieValue)) {
+        Map<String, Object> decrypt = JwtUtils.decrypt(cookieValue);
+        String redisKey = String.valueOf(decrypt.get(cookieName));
+        Object obj = redisUtils.get(redisKey);
+        if(ObjectUtils.isNotEmpty(obj) && "dianjiu".equals(obj.toString())){
             log.info("cookie验证通过");
             return true;
-        }*/
+        }
         return false;
     }
 
@@ -36,31 +46,38 @@ public class SSOServerController {
      * @param username 用户名
      * @param password 密码
      */
-    /*@PostMapping
-    public Result<Map<String,Object>> checkLogin (String username, String password) {
+    @PostMapping
+    public RespVO<Map<String,Object>> checkLogin (String username, String password) {
         log.info("统一登录校验");
-        TbUser user = userService.login(username, password);
-        if (user != null) {
+        //TbUser user = userService.login(username, password);
+        if ("user" != null) {
             //封装参数
             Map<String, Object> param = new HashMap<>();
             //获得所有子系统域名信息
-            List<TbDomain> domains = domainService.selectAll();
+            /*List<TbDomain> domains = domainService.selectAll();
             List<String> domainUrl = new ArrayList<>(domains.size());
             domains.forEach(domain->{
                 domainUrl.add(domain.getDomain()+"/addcookie");
-            });
-            //生成jwt，加密用户信息
-            String cookieName = "jian";
-            String cookieValue = new JwtUtil(user.toString(),null).creatJwt();
-            param.put("cookieurl",domainUrl);
+            });*/
+            //生成用户UUID，为Redis的Key
+            String key = UUID.randomUUID().toString().replace("-", "");
+            log.info("用户【"+username+"】的UUID为"+key);
+            redisUtils.set(key, "UserInfo");
+            //JWT加密key为cookie的value
+            String cookieName = "dianjiu";//username
+            Map<String, Object> hashMap = new HashMap<>();
+            hashMap.put("redisKey",key);
+            String cookieValue = JwtUtils.encrypt(hashMap);
+            log.info("用户【"+username+"】的UUID经JWT加密后为"+cookieValue);
+            param.put("cookieurl","domainUrl");//重定向地址
             param.put("cookieName", cookieName);
             param.put("cookieValue",cookieValue);
-            Result<Map<String, Object>> result = new Result<>(ResultCodeEnum.AUTHSUCCESS);
+            RespVO<Map<String, Object>> result = new RespVO<>();
             result.setData(param);
             return result;
         }
-        return new Result<>(ResultCodeEnum.UNAUTHORIZEd,"账号或密码错误");
-    }*/
+        return new RespVO<>("222","账号或密码错误");
+    }
 
     /**
      * 添加需要清除的cookie

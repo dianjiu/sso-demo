@@ -23,7 +23,7 @@ public class JwtUtils {
      * @param userMap 自己需要存储进token中的信息
      * @return token
      */
-    public static String encrypt(HashMap<String, Object> userMap) {
+    public static String encrypt(Map<String, Object> userMap) {
         // 头部
         Map<String, Object> headerMap = new HashMap<>(4);
         headerMap.put("alg", "HS256");
