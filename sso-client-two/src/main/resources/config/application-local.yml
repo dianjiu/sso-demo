@@ -1,0 +1,4 @@
+spring:
+  application:
+    name: sso-client-two
+  profiles: local #开发环境

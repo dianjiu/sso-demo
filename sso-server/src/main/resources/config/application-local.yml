@@ -1,0 +1,4 @@
+spring:
+  application:
+    name: sso-server
+  profiles: local #开发环境
