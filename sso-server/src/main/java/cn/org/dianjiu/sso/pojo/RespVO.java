@@ -1,6 +1,7 @@
 package cn.org.dianjiu.sso.pojo;
 
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
