@@ -39,6 +39,25 @@ eg:a.com b.com sso.com
    首先根据redis的key清楚缓存中的用户凭证，
    然后查询所有的客户端的域名，调用客户端清除cookie方法，
    响应logout结果
+   
+## 修改win10配置文件
+C:\Windows\System32\drivers\etc
+
+127.0.0.1 a.com
+
+127.0.0.1 b.com
+
+127.0.0.1 sso.com
+
+这段配置的意思是,我们在浏览器中输入:
+
+http://a.com
+
+http://b.com
+
+http://sso.com
+
+其实访问的都是本机:127.0.0.1
 
 
 
