@@ -9,7 +9,6 @@ import cn.org.dianjiu.sso.service.TUserWebServiceI;
 import cn.org.dianjiu.sso.util.JwtUtils;
 import cn.org.dianjiu.sso.util.ObjectUtils;
 import cn.org.dianjiu.sso.util.RedisUtils;
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -98,10 +97,10 @@ public class SSOServerController {
     }
 
     /**
-     * 添加需要清除的cookie
+     * 统一处理logout请求
      */
-    @GetMapping("/loginout")
-    public String loginOut (String cookieName, String cookieValue) {
+    @GetMapping("/logout")
+    public String logout (String cookieName, String cookieValue) {
         //通过jwt解密获取redis的key
         Map<String, Object> decrypt = JwtUtils.decrypt(cookieValue);
         String redisKey = String.valueOf(decrypt.get("userToken"));
@@ -114,8 +113,8 @@ public class SSOServerController {
         userWebResps.forEach(domain->{
             domainUrl.add(domain.getWebUrl() +"/clearCookie");
         });
-        String resultMsg = JSON.toJSONString(domainUrl);
-        return domainUrl.get(0);
+        //遍历domainUrl，可采用异常线程使用http工具类调用客户端的clearCookie
+        return "登出成功！";
     }
 
 }

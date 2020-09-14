@@ -18,7 +18,7 @@
 3. 支持跨父域名的单点登录，
 eg:a.com b.com sso.com
 
-## 
+## 实现逻辑
 1. 测试服务中访问任意前台系统(a.com/index.html)不拦截请求
 2. 测试服务中访问任意后台请求(a.com/admin/delUser)拦截请求，从客户端取出cookie,
    客户端校验cookie是否存在，
@@ -34,8 +34,11 @@ eg:a.com b.com sso.com
    如果存在则通过UUID生成Redis的key，value为查到的用户信息，存入到redis，当天有效
    并且通过JWTUtil对redisKey进行加密得到cookie的value，用户名为cookie的name，
    重定向到goto路径
-5. 单点服务的logout
-
+5. 单点服务的logout中获取cookieName和cookieValue，
+   通过jwt对cookieValue进行解密，获取到redis的Key，
+   首先根据redis的key清楚缓存中的用户凭证，
+   然后查询所有的客户端的域名，调用客户端清除cookie方法，
+   响应logout结果
 
 
 
