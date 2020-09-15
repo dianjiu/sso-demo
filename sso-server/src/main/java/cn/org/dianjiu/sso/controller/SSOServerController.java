@@ -57,7 +57,7 @@ public class SSOServerController {
      * @param username 用户名
      * @param password 密码
      */
-    @PostMapping
+    @PostMapping("/checkLogin")
     public RespVO<Map<String,Object>> checkLogin (String username, String password) {
         log.info("统一登录校验");
         TUserReq tUserReq = new TUserReq();

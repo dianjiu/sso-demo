@@ -4,7 +4,6 @@ import cn.org.dianjiu.sso.util.HttpClientUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +21,7 @@ public class SSOClientOneController {
      * @return 响应界面：login/index
      */
     @GetMapping("/checkCookie")
-    public ModelAndView checkCookie (HttpServletRequest request) {
+    public String checkCookie (HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
@@ -36,13 +35,13 @@ public class SSOClientOneController {
                     boolean authBoo  = Boolean.valueOf(result);
                     if (authBoo) {
                         log.info("验证通过");
-                        return new ModelAndView("public/index");
+                        return "public/index";
                     }
                     break;
                 }
             }
         }
-        return new ModelAndView("index");
+        return "redirect:http://sso.com:8080/login";
     }
 
     /**
