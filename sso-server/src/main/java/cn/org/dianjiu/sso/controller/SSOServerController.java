@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 
 @Slf4j
 @Controller
+@RequestMapping("/sso")
 public class SSOServerController {
 
     @Autowired
@@ -35,7 +37,7 @@ public class SSOServerController {
      * @param cookieValue cookie内容
      * @return 是否认证成功
      */
-    @GetMapping("/checkCookie")
+    @PostMapping ("/checkCookie")
     public boolean checkAuthCookies (String cookieName, String cookieValue) {
         //通过jwt解密获取redis的key
         Map<String, Object> decrypt = JwtUtils.decrypt(cookieValue);

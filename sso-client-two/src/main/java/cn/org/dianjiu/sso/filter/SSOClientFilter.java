@@ -1,6 +1,5 @@
 package cn.org.dianjiu.sso.filter;
 
-import cn.org.dianjiu.sso.util.HttpUtil;
 import cn.org.dianjiu.sso.util.ObjectUtils;
 import cn.org.dianjiu.sso.util.SSOClientUtil;
 
